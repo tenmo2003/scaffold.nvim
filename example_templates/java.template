@@ -1,0 +1,9 @@
+${JAVA_PACKAGE_NAME}
+
+/**
+ * @author <your_name_here>
+ * @since ${YEAR}-${MONTH}-${DAY}
+ */
+public class ${FILE_NAME_NO_EXT} {
+    ${CURSOR}
+}
