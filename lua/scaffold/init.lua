@@ -1,7 +1,5 @@
 local M = {}
 
-local CURSOR_PLACEHOLDER = "${CURSOR}"
-
 local default_config = {
 	templates_dir = vim.fn.stdpath("config") .. "/templates",
 	startinsert = true,
@@ -45,9 +43,15 @@ local default_config = {
 	},
 }
 
+local function get_placeholder(placeholder_name)
+	return "${" .. placeholder_name .. "}"
+end
+
+local CURSOR_PLACEHOLDER = get_placeholder("CURSOR")
+
 local function populate_template(args, template, placeholder_providers)
 	local function replace(str, placeholder, func)
-		local placeholder_start, placeholder_end = str:find(placeholder)
+		local placeholder_start = str:find(placeholder)
 		if placeholder_start then
 			local replacement = func(args)
 			return str:gsub(placeholder, replacement)
@@ -56,7 +60,7 @@ local function populate_template(args, template, placeholder_providers)
 	end
 
 	for placeholder_name, func in pairs(placeholder_providers) do
-		template = replace(template, "${" .. placeholder_name .. "}", func)
+		template = replace(template, get_placeholder(placeholder_name), func)
 	end
 	return template
 end
