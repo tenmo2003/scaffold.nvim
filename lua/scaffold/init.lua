@@ -98,12 +98,7 @@ M.setup = function(config)
 		group = augroup,
 		pattern = "*",
 		callback = function(args)
-			local lines = vim.api.nvim_buf_get_lines(args.buf, 0, -1, false)
-			if #lines > 1 or lines[1] ~= "" then
-				return
-			end
-
-			local filetype = vim.bo[args.buf].filetype
+			local filetype = vim.bo.filetype
 			if not filetype then
 				return
 			end
@@ -111,9 +106,14 @@ M.setup = function(config)
 			if not template then
 				return
 			end
+
+			local lines = vim.api.nvim_buf_get_lines(args.buf, 0, -1, false)
+			if #lines > 1 or lines[1] ~= "" then
+				return
+			end
 			local content = populate_template(args, template, config.placeholder_providers)
 			if content then
-				vim.api.nvim_buf_set_lines(args.buf, 0, -1, false, vim.split(content, "\n"))
+				vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(content, "\n"))
 			end
 			maybe_move_cursor()
 			if config.startinsert then
