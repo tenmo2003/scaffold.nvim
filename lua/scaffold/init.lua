@@ -76,14 +76,18 @@ local function get_template(config, filetype)
 	return nil
 end
 
-local function maybe_move_cursor()
+local function maybe_move_cursor(startinsert)
 	local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-	for index, line in ipairs(lines) do
+	for line_index, line in ipairs(lines) do
 		local start = line:find(CURSOR_PLACEHOLDER)
 		if start then
-			local removed_placeholder_line = line:gsub(CURSOR_PLACEHOLDER, "")
-			vim.api.nvim_win_set_cursor(0, { index, start - 1 })
-			vim.api.nvim_set_current_line(removed_placeholder_line)
+			local line_with_removed_placeholder = line:gsub(CURSOR_PLACEHOLDER, " ")
+			vim.api.nvim_buf_set_lines(0, line_index - 1, line_index, false, { line_with_removed_placeholder })
+			vim.api.nvim_win_set_cursor(0, { line_index, start - 1 })
+
+			if startinsert then
+				vim.cmd("startinsert")
+			end
 			return
 		end
 	end
@@ -115,10 +119,7 @@ M.setup = function(config)
 			if content then
 				vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(content, "\n"))
 			end
-			maybe_move_cursor()
-			if config.startinsert then
-				vim.cmd("startinsert")
-			end
+			maybe_move_cursor(config.startinsert)
 		end,
 	})
 end
